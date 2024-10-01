@@ -24,7 +24,9 @@ pub struct ReportCard {
     pub student_age: u8,
 }
 
-impl ReportCard {
+use std::fmt::Display;
+
+impl Display for ReportCard {
     pub fn print(&self) -> String {
         format!("{} ({}) - achieved a grade of {}",
             &self.student_name, &self.student_age, &self.grade)
