@@ -35,8 +35,9 @@ where
     T: Mul<Output = T> + Copy,
 {
     // TODO: Implement the function body.
-    let value = *arg.as_mut();
-    *arg = Box::new(value * value)
+    // 使用 as_mut() 获取可变引用，并进行解引用
+    let value = arg.as_mut();
+    *arg = Box::new(*value * *value); // 计算平方并存储回 Box 中
 }
 
 
