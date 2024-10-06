@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -32,6 +32,47 @@ struct LinkedList<T> {
 impl<T> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+impl <T: std::cmp::PartialOrd>  LinkedList<T> {
+    pub fn  merge(mut list_a: LinkedList<T>, mut list_b: LinkedList<T>) -> Self {
+        let mut list = LinkedList::<T>::new();
+
+        while list_a.length > 0 && list_b.length > 0 {
+            if list_a.get(0).unwrap() <= list_b.get(0).unwrap() {
+                // Add from list_a
+                list.add(list_a.remove_first().unwrap());
+            } else {
+                // Add from list_b
+                list.add(list_b.remove_first().unwrap());
+            }
+        }
+
+        // Append remaining nodes from list_a if any
+        while list_a.length > 0 {
+            list.add(list_a.remove_first().unwrap());
+        }
+
+        // Append remaining nodes from list_b if any
+        while list_b.length > 0 {
+            list.add(list_b.remove_first().unwrap());
+        }
+
+        list
+    }
+
+    // Helper function to remove the first element and return it
+    fn remove_first(&mut self) -> Option<T> {
+        self.start.map(|node_ptr| {
+            let node = unsafe { Box::from_raw(node_ptr.as_ptr()) };
+            self.start = node.next;
+            if self.start.is_none() {
+                self.end = None;
+            }
+            self.length -= 1;
+            node.val
+        })
     }
 }
 
@@ -69,15 +110,7 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
-	}
+
 }
 
 impl<T> Display for LinkedList<T>
