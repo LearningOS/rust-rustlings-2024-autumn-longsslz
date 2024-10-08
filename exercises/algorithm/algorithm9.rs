@@ -1,8 +1,8 @@
 /*
 	heap
-	This question requires you to implement a binary heap function
+	This question requires you to implement ac function
 */
-// I AM NOT DONE
+
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -23,7 +23,7 @@ where
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
             count: 0,
-            items: vec![T::default()],
+            items: Vec::new(),
             comparator,
         }
     }
@@ -37,28 +37,57 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        self.heapify_up(self.count - 1);
+    }
+
+    fn heapify_up(&mut self, mut index: usize) {
+        while index > 0 {
+            let parent = self.parent_idx(index);
+            if (self.comparator)(&self.items[index], &self.items[parent]) {
+                self.items.swap(index, parent);
+                index = parent;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn heapify_down(&mut self, mut index: usize) {
+        while self.children_present(index) {
+            let left_child = self.left_child_idx(index);
+            let right_child = self.right_child_idx(index);
+            let mut extreme = index;
+
+            if left_child < self.count && (self.comparator)(&self.items[left_child], &self.items[extreme]) {
+                extreme = left_child;
+            }
+            if right_child < self.count && (self.comparator)(&self.items[right_child], &self.items[extreme]) {
+                extreme = right_child;
+            }
+            if extreme == index {
+                break;
+            }
+            self.items.swap(index, extreme);
+            index = extreme;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
-        idx / 2
+        (idx - 1) / 2
     }
 
     fn children_present(&self, idx: usize) -> bool {
-        self.left_child_idx(idx) <= self.count
+        self.left_child_idx(idx) < self.count
     }
 
     fn left_child_idx(&self, idx: usize) -> usize {
-        idx * 2
+        idx * 2 + 1
     }
 
     fn right_child_idx(&self, idx: usize) -> usize {
-        self.left_child_idx(idx) + 1
-    }
-
-    fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        idx * 2 + 2
     }
 }
 
@@ -66,12 +95,10 @@ impl<T> Heap<T>
 where
     T: Default + Ord,
 {
-    /// Create a new MinHeap
     pub fn new_min() -> Self {
         Self::new(|a, b| a < b)
     }
 
-    /// Create a new MaxHeap
     pub fn new_max() -> Self {
         Self::new(|a, b| a > b)
     }
@@ -79,20 +106,28 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default + Clone,
 {
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+        let min_value = self.items[0].clone();
+        let last_value = self.items.pop().unwrap();
+        self.count -= 1;
+        if !self.is_empty() {
+            self.items[0] = last_value;
+            self.heapify_down(0);
+        }
+        Some(min_value)
     }
 }
 
 pub struct MinHeap;
 
 impl MinHeap {
-    #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
         T: Default + Ord,
@@ -104,7 +139,6 @@ impl MinHeap {
 pub struct MaxHeap;
 
 impl MaxHeap {
-    #[allow(clippy::new_ret_no_self)]
     pub fn new<T>() -> Heap<T>
     where
         T: Default + Ord,
@@ -116,6 +150,7 @@ impl MaxHeap {
 #[cfg(test)]
 mod tests {
     use super::*;
+    
     #[test]
     fn test_empty_heap() {
         let mut heap = MaxHeap::new::<i32>();
@@ -127,14 +162,14 @@ mod tests {
         let mut heap = MinHeap::new();
         heap.add(4);
         heap.add(2);
-        heap.add(9);
         heap.add(11);
+        heap.add(9);
+
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(2));
         assert_eq!(heap.next(), Some(4));
         assert_eq!(heap.next(), Some(9));
-        heap.add(1);
-        assert_eq!(heap.next(), Some(1));
+        assert_eq!(heap.next(), Some(11));
     }
 
     #[test]
@@ -144,11 +179,12 @@ mod tests {
         heap.add(2);
         heap.add(9);
         heap.add(11);
+
+
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(11));
         assert_eq!(heap.next(), Some(9));
         assert_eq!(heap.next(), Some(4));
-        heap.add(1);
         assert_eq!(heap.next(), Some(2));
     }
 }

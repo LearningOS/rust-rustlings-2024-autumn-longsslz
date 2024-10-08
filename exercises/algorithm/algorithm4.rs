@@ -84,24 +84,24 @@ where
     fn insert(&mut self, value: T) {
         //TODO
         match value.cmp(&self.value) {
-                   Ordering::Less => {
-                       if let Some(left) = &mut self.left {
-                           left.insert(value);
-                       } else {
-                           self.left = Some(Box::new(TreeNode::new(value)));
-                       }
-                   }
-                   Ordering::Greater => {
-                       if let Some(right) = &mut self.right {
-                           right.insert(value);
-                       } else {
-                           self.right = Some(Box::new(TreeNode::new(value)));
-                       }
-                   }
-                   Ordering::Equal => {
-                       // 如果值已经存在，通常不需要做任何操作，具体操作可根据需求决定
-                   }
-               }
+            Ordering::Less => {
+                if let Some(left) = &mut self.left {
+                    left.insert(value);
+                } else {
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Greater => {
+                if let Some(right) = &mut self.right {
+                    right.insert(value);
+                } else {
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Ordering::Equal => {
+                // 如果值已经存在，通常不需要做任何操作，具体操作可根据需求决定
+            }
+        }
     }
 }
 
