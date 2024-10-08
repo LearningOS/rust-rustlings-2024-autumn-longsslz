@@ -170,6 +170,8 @@ mod tests {
         assert_eq!(heap.next(), Some(4));
         assert_eq!(heap.next(), Some(9));
         assert_eq!(heap.next(), Some(11));
+        heap.add(1);
+        assert_eq!(heap.next(), Some(1));
     }
 
     #[test]
@@ -186,5 +188,7 @@ mod tests {
         assert_eq!(heap.next(), Some(9));
         assert_eq!(heap.next(), Some(4));
         assert_eq!(heap.next(), Some(2));
+        heap.add(1);
+        assert_eq!(heap.next(), Some(1));
     }
 }
